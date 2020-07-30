@@ -5,14 +5,17 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from sklearn.linear_model import LinearRegression
+from datetime import date
+from datetime import datetime
 
 
 if __name__ == '__main__':
     
-    if len(sys.argv) >= 2:
+    if len(sys.argv) >= 3:
         data = pd.read_csv(sys.argv[1])
+        dateToPredict = datetime.fromisoformat(sys.argv[2]) # Format must be 'YYYY-MM-DD'
     else:
-        print("Provide the csv with historical data for analysis")
+        print("Provide the csv with historical data for analysis and a date to predict the closing value")
         sys.exit()
 
     # Drop NaN rows
@@ -23,27 +26,23 @@ if __name__ == '__main__':
 
     data['Date'] = pd.to_datetime(data['Date'])
 
+                            # Differente between the dates in days
     data['Date_delta'] = (data['Date'] - data['Date'].min()) / np.timedelta64(1, 'D')
 
     data['Variation'] = data['Close'].sub(data['Open'])
 
-    #print(data.head())
-
     print("Correlation between Date and Closing values:")
     print(data[['Date_delta', 'Close']].corr())
 
-    x1=data.Date
-    y1=data.Close
-    fig = px.scatter(data, x='Date', y='Close')
-    fig.show()
+    # x1=data.Date
+    # y1=data.Close
+    # fig = px.scatter(data, x='Date', y='Close')
+    # fig.show()
 
     maxDate = data['Date_delta'].max()
 
-    trainingSet = data[data['Date_delta'] < round(maxDate*0.8)]
-    validationSet = data[data['Date_delta'] >= round(maxDate*0.8)] 
-
-    x_v = trainingSet[['Date_delta']]
-    y_v = trainingSet[['Close']]
+    x_v = data[['Date_delta']]
+    y_v = data[['Close']]
 
     model = LinearRegression()
     model.fit(x_v, y_v)
@@ -56,3 +55,17 @@ if __name__ == '__main__':
 
     print("model score:")
     print(model.score(x_v, y_v))
+
+    dates_deltaToPredict = np.arange(maxDate+1, ((dateToPredict - data['Date'].min()) / np.timedelta64(1, 'D'))+1 )
+
+    dates_deltaToPredict = [int(i) for i in dates_deltaToPredict]
+
+    datesToPredict = []
+
+    for date_delta in dates_deltaToPredict:
+        
+        date = data['Date'].min() + np.timedelta64(int(date_delta), 'D')
+        datesToPredict.append(date) 
+
+    for item in dates_deltaToPredict:
+        print(model.predict([[item]]))

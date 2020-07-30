@@ -1,0 +1,3 @@
+Execute o comando abaixo para prever o valor de fechamento para os dias 21, 22 e 23 de Julho. A ultima data disponivel no csv usado é dia 20-07-2020
+
+py .trabalho3.py .ES=F.csv 2020-07-23
