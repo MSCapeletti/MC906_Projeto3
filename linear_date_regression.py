@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 from datetime import date
 from datetime import datetime
 
@@ -46,8 +47,11 @@ if __name__ == '__main__':
     x_v = data[['Date_delta']]
     y_v = data[['Close']]
 
+    x_train, x_test, y_train, y_test = train_test_split(
+        x_v, y_v, test_size=0.33, random_state=0)
+
     model = LinearRegression()
-    model.fit(x_v, y_v)
+    model.fit(x_train, y_train)
 
     # print("Coefficients and constant found:")
     # print(model.coef_, model.intercept_)
@@ -56,7 +60,7 @@ if __name__ == '__main__':
     # print(y_v, model.predict(x_v))
 
     print("model score:")
-    print(model.score(x_v, y_v))
+    print(model.score(x_test, y_test))
 
     dates_deltaToPredict = np.arange(
         maxDate+1, ((dateToPredict - data['Date'].min()) / np.timedelta64(1, 'D'))+1)
