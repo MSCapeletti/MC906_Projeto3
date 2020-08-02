@@ -44,37 +44,28 @@ if __name__ == '__main__':
 
     maxDate = data['Date_delta'].max()
 
-    X = data[['Open', 'High', 'Low', 'Volume', 'Close']]
-    X.pop(0)  # use last day's values to predict next day's close
+    features = ['Open', 'High', 'Low', 'Volume', 'Close']
 
-    Y = data[['Close']].pop()  # remove last item so they have same size
+    X = data[features]
+    Y = data[['Close']]
+
+    # use last day's values to predict next day's close
+    X = X.drop([0])
+    X = X.reset_index()
+
+    # remove last item so they have same size
+    Y = Y.drop([Y.size - 1])  
+    Y = Y.reset_index()
 
     model = LinearRegression()
 
     x_train, x_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.4, random_state=0)
+        X, Y, test_size=0.33, random_state=0)
 
     model.fit(x_train, y_train)
-
-    # print("Coefficients and constant found:")
-    # print(model.coef_, model.intercept_)
-
-    # print("Real values for the period provided, predicted values for the same period:")
-    # print(y_v, model.predict(x_v))
 
     print("model score:")
     print(model.score(x_test, y_test))
 
-    # dates_deltaToPredict = np.arange(maxDate+1, ((dateToPredict - data['Date'].min()) / np.timedelta64(1, 'D'))+1 )
-
-    # dates_deltaToPredict = [int(i) for i in dates_deltaToPredict]
-
-    # datesToPredict = []
-
-    # for date_delta in dates_deltaToPredict:
-
-    #     date = data['Date'].min() + np.timedelta64(int(date_delta), 'D')
-    #     datesToPredict.append(date)
-
-    # for item in dates_deltaToPredict:
-    #     print(model.predict([[item]]))
+    print('coefficients:')
+    print(model.coef_)
