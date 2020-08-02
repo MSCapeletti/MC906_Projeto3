@@ -55,7 +55,6 @@ if __name__ == '__main__':
 
     # remove last item so they have same size
     Y = Y.drop([Y.size - 1])  
-    Y = Y.reset_index()
 
     model = LinearRegression()
 
