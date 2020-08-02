@@ -43,17 +43,20 @@ if __name__ == '__main__':
     # fig = px.scatter(data, x='Date', y='Close')
     # fig.show()
 
-    maxDate = data['Date_delta'].max()
-
     X = data[['Open', 'High', 'Low', 'Volume', 'Close']]
-    X.pop(0)  # use last day's values to predict next day's close
+    Y = data[['Close']]
 
-    Y = data[['Close']].pop()  # remove last item so they have same size
+    # use last day's values to predict next day's close
+    X = X.drop([0])
+    X = X.reset_index()
 
-    model = SVR() # support vector regression
+    # remove last item so they have same size
+    Y = Y.drop([Y.size - 1])
+
+    model = SVR(kernel='poly') # support vector regression
 
     x_train, x_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.4, random_state=0)
+        X, Y, test_size=0.33, random_state=0)
 
     model.fit(x_train, y_train)
 
