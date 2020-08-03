@@ -12,12 +12,10 @@ from datetime import datetime
 
 if __name__ == '__main__':
 
-    if len(sys.argv) >= 3:
+    if len(sys.argv) >= 2:
         data = pd.read_csv(sys.argv[1])
-        dateToPredict = datetime.fromisoformat(
-            sys.argv[2])  # Format must be 'YYYY-MM-DD'
     else:
-        print("Provide the csv with historical data for analysis and a date to predict the closing value")
+        print("Provide the csv with historical data for analysis")
         sys.exit()
 
     # Drop NaN rows

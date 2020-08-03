@@ -10,6 +10,10 @@ from datetime import date
 from datetime import datetime
 
 
+# Esse programa tenta predizer o valor de fechamento da ação na data fornecida, baseando-se apenas nesses 2 parâmetros
+# através de uma regressão linear simples, pois para valores futuros de uma ação é improvável que alguém possua informações como
+# data de abertura, alta, baixa, média e volume
+
 if __name__ == '__main__':
 
     if len(sys.argv) >= 3:
