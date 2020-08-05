@@ -10,9 +10,8 @@ from datetime import date
 from datetime import datetime
 
 
-# Esse programa tenta predizer o valor de fechamento da ação na data fornecida, baseando-se apenas nesses 2 parâmetros
-# através de uma regressão linear simples, pois para valores futuros de uma ação é improvável que alguém possua informações como
-# data de abertura, alta, baixa, média e volume
+# Esse programa tenta predizer o valor de fechamento da ação na data fornecida, baseando-se na data e os valores de abertura anteriores e previstos
+# através de uma regressão linear múltipla
 
 if __name__ == '__main__':
 
@@ -39,16 +38,11 @@ if __name__ == '__main__':
     data['Variation'] = data['Close'].sub(data['Open'])
 
     print("Correlation between Date and Closing values:")
-    print(data[['Date_delta', 'Close']].corr())
-
-    # x1=data.Date
-    # y1=data.Close
-    # fig = px.scatter(data, x='Date', y='Close')
-    # fig.show()
+    print(data[['Date_delta', 'Open', 'Close']].corr())
 
     maxDate = data['Date_delta'].max()
 
-    x_v = data[['Date_delta']]
+    x_v = data[['Date_delta', 'Open']]
     y_v = data[['Close']]
 
     model = LinearRegression()
@@ -63,23 +57,23 @@ if __name__ == '__main__':
     print("model score:")
     print(round(model.score(x_v, y_v), 5))
 
-    dates_deltaToPredict = np.arange(
-        maxDate+1, ((dateToPredict - data['Date'].min()) / np.timedelta64(1, 'D'))+1)
+    dates_deltaToPredict = np.arange(maxDate+1, ((dateToPredict - data['Date'].min()) / np.timedelta64(1, 'D'))+1)
 
     dates_deltaToPredict = [int(i) for i in dates_deltaToPredict]
 
     datesToPredict = []
 
     for date_delta in dates_deltaToPredict:
-
         date = data['Date'].min() + np.timedelta64(int(date_delta), 'D')
         datesToPredict.append(date)
 
 
-
     print("Closing values predicted for the dates:")
 
-    # Previsão do valor de fechamento para as datas após o último dia dos dados disponíveis
+    # Previsão do valor de fechamento para as datas após o último dia dos dados disponíveis,
+    # para valor de abertura do primeiro dia da previsão utiliza-se o valor de fechamento do último dia dos dados disponíveis
+    # para valor de abertura dos demais dias após isso utiliza-se o valor previsto de fechamento do dia anterior
+    openValue = data.loc[len(data['Open'])-1, 'Open']
 
     i = 0
     while i < len(dates_deltaToPredict):
@@ -87,7 +81,8 @@ if __name__ == '__main__':
         dd = dates_deltaToPredict[i]
         date = datesToPredict[i]
 
-        closingValue = model.predict([[dd]])[0][0]
+        closingValue = model.predict([[dd, openValue]])[0][0]
         print("Date: "+date.strftime('%Y-%m-%d')+", closing value: "+ str(round(closingValue, 2)))
+        openValue = closingValue
 
         i = i + 1

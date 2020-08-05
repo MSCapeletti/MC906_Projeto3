@@ -4,13 +4,35 @@
 
 - Descrição da técnica adotada:
 	
-	Para a previsão dos dados fizemos uso de uma técnica de regressão linear, a qual não exatamente faz parte das técnicas de Machine Learning,
-porém seus conceitos podem ser combinados com outras técnicas no mesmo problema para a produção de melhores predições.
-	Para este problema utilizamos uma regressão linear simples, isto é, através do valor de uma variável (data do fechamento da ação) planejamos
-prever o valor de fechamento da ação para a mesma data, com base nos valores históricos fornecidos.
-	A razão para usarmos apenas apenas a data do fechamento é que em uma situação real dificilmente a pessoa terá em mãos outras informações que possam aproximar a predição, 
-como por exemplo o valor de abertura.
+	Para a previsão dos dados fizemos uso de uma técnica de regressão linear usando método dos mínimos quadrados,
+a qual não exatamente faz parte das técnicas de Machine Learning, porém seus conceitos podem ser combinados com outras técnicas no 
+mesmo problema para a produção de melhores predições.
+	Para este problema utilizamos uma regressão linear simples, isto é, através do valor de uma variável (data do fechamento da ação)
+planejamos prever o valor de fechamento da ação para a mesma data, com base nos valores históricos fornecidos.
+	A razão para usarmos apenas apenas a data do fechamento é que em uma situação real dificilmente a pessoa terá em mãos 
+outras informações que possam aproximar a predição, como por exemplo o valor de abertura.
 
 - Resultados obtidos e discussão sobre os mesmos:
+
+	Para validação da qualidade da predição utilizamos o coeficiente R², que varia de 0 a 1, quanto mais próximo de 1 melhor é a explicação dos dados preexistentes pelo modelo,
+e é um "bom" indicador da qualidade das previsões futuras, visto que o valor de uma ação está ligado a diversos aspectos não parametrizáveis, como a pandemia de COVID-19,
+a qual provocou uma queda no valor de ações de muitas empresas no mundo todo.
+	O coeficiente R² é calculado pela divisão da Soma Total dos Quadrados (STQ) pela Soma dos Quadrados dos Resíduos (SQU):
+
+			R² = SUM(y - y')², y é o valor real, y' é a média
+			     ------------
+			     SUM(y - y")², y é o valor real, y" é o valor predito
+
+-- Restrições e especificidades de implementação
+	
+	os programas linear_date_regression e linear_date_open_regression devem ser chamados passando como argumento um csv contendo 
+os valores históricos da ação de uma empresa, com os nomes de colunas para data de abertura, valor de abertura e fechamento como 'Date', 
+'Open' e 'Close', respectivamente. 
+	A data para a qual se deseja realizar a previsão deve ser após a última data disponível no csv fornecido e deve estar no formato
+'YYYY-mm-dd'.
+	Exemplo de comando para execução dos programas:
+
+		py linear_date_regression.py ES=F.csv 2020-07-03
+
 
 	
