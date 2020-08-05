@@ -48,11 +48,13 @@ if __name__ == '__main__':
     Y = data[['Close']]
 
     # use last day's values to predict next day's close
-    X = X.drop([0])
-    X = X.reset_index()
-
-    # remove last item so they have same size
-    Y = Y.drop([Y.size - 1])  
+    # remove first day from target
+    Y = Y.drop([0])
+    Y = Y.reset_index(drop=True)
+    
+    # remove the last day from input
+    X = X.drop([X.shape[0] - 1])
+    X.reset_index(drop=True)
 
     model = LinearRegression()
 
