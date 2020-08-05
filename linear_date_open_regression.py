@@ -8,6 +8,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from datetime import date
 from datetime import datetime
+import plotly.graph_objects as go
 
 
 # Esse programa tenta predizer o valor de fechamento da ação na data fornecida, baseando-se na data e os valores de abertura anteriores e previstos
@@ -76,13 +77,30 @@ if __name__ == '__main__':
     openValue = data.loc[len(data['Open'])-1, 'Open']
 
     i = 0
+    closing_values = []
     while i < len(dates_deltaToPredict):
 
         dd = dates_deltaToPredict[i]
         date = datesToPredict[i]
 
         closingValue = model.predict([[dd, openValue]])[0][0]
+        closing_values.append(closingValue)
         print("Date: "+date.strftime('%Y-%m-%d')+", closing value: "+ str(round(closingValue, 2)))
         openValue = closingValue
 
         i = i + 1
+
+    # Graph showing the close stock values predicted
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=dates_deltaToPredict, y=closing_values, mode='lines', name='close'))
+    # fig.show()
+
+    # Graph correlating the Open and Close stock alues
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=data['Open'], y=data['Close'], mode='lines', name='close'))
+    # fig.show()
+
+    fig = px.line(data, x='Open', y='Close')
+    fig.show()
+
+    # px.scatter(data, x='Open', y='Close', )
