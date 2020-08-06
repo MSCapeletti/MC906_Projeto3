@@ -11,6 +11,13 @@ from datetime import datetime
 import plotly.graph_objects as go
 
 
+def flatten_list(dataframe):
+    flat_list = []
+    for sublist in dataframe.values:
+        for item in sublist:
+            flat_list.append(item)
+    return flat_list
+
 # Esse programa tenta predizer o valor de fechamento da ação na data fornecida, baseando-se apenas nesses 2 parâmetros
 # através de uma regressão linear simples, pois para valores futuros de uma ação é improvável que alguém possua informações como
 # data de abertura, alta, baixa, média e volume
@@ -54,6 +61,8 @@ if __name__ == '__main__':
     maxDate = data['Date_delta'].max()
 
     x_v = data[['Date_delta']]
+    # df2 = pd.DataFrame([[(data['Date_delta'].max() + 1.0)]], columns=['Date_delta'])
+    # x_v = x_v.append(df2, ignore_index=True)
     y_v = data[['Close']]
 
     model = LinearRegression()
@@ -80,7 +89,7 @@ if __name__ == '__main__':
         yaxis_title="Close Values",
     )
     fig.add_trace(go.Scatter(x=data['Date'], y=flat_list, mode='lines', name='predictions'))
-    fig.show()
+    # fig.show()
 
     print("model score:")
     print(round(model.score(x_v, y_v), 5))
@@ -105,18 +114,44 @@ if __name__ == '__main__':
 
     closing_values = []
     i = 0
+    df2 = pd.DataFrame(columns=['Date_delta'])
+    df3 = pd.DataFrame(columns=['Close'])
     while i < len(dates_deltaToPredict):
 
         dd = dates_deltaToPredict[i]
         date = datesToPredict[i]
-
         closingValue = model.predict([[dd]])[0][0]
         closing_values.append(closingValue)
         print("Date: "+date.strftime('%Y-%m-%d')+", closing value: "+ str(round(closingValue, 2)))
-
+        df2 = df2.append({'Date_delta': dates_deltaToPredict[i]}, ignore_index=True)
+        df3 = df3.append({'Close': closingValue}, ignore_index=True)
         i = i + 1
+        # aux = pd.DataFrame(maxDate + i, columns=['Date_delta'])
+
+    dates = x_v
+    dates = dates.append(df2, ignore_index=True)
+    close_v = data[['Close']]
+    close_v = close_v.append(df3, ignore_index=True)
+
+
+    dates = flatten_list(dates)
+    # flat_list = []
+    # for sublist in close_v.values:
+    #     for item in sublist:
+    #         flat_list.append(item)
+    close_v = flatten_list(close_v)
+    fig = go.Figure()
+    fig.add_trace((go.Scatter(x=dates, y=data['Close'], mode='lines', name='someName')))
+    fig.add_trace((go.Scatter(x=df2['Date_delta'], y=closing_values, mode='lines', name='otherName')))
+    fig.show()
+
+
+
+
+
 
     # Graph showing the predicted closing stock values on dates requested
     # fig = go.Figure()
     # fig.add_trace(go.Scatter(x=dates_deltaToPredict, y=closing_values, mode='lines', name='close'))
     # fig.show()
+
