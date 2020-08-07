@@ -44,9 +44,8 @@ while i < len(dates_deltaToPredict):
     openValue = closingValue
     i = i + 1
 
-
 # Graph correlating the Open and Close stock values
 vag.fig_sct_open_close(data)
 
 # Generating a comparative graph between the prices we have and future prices our model predicted
-vag.fig_real_predicted_values(data, df2)
+vag.fig_real_predicted_values(data, df2, 'Regressao Linear Multipla usando Date e Open')

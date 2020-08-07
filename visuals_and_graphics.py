@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
 
-def fig_real_predicted_values(real_data, predicted_data):
+def fig_real_predicted_values(real_data, predicted_data, title=None):
     fig = go.Figure()
     fig.add_trace((
         go.Scatter(
@@ -25,6 +25,11 @@ def fig_real_predicted_values(real_data, predicted_data):
         yaxis_title="Close",
     )
 
+    if title != None:
+        fig.update_layout(
+            title=title
+        )   
+
     fig.show()
 
 
@@ -39,6 +44,7 @@ def fig_sct_open_close(real_data):
         )
     )
 
+    # Linha y=x, apenas para situar melhor os pontos do scatter acima
     fig.add_trace(
         go.Scatter(
             x=real_data['Open'].unique(), 

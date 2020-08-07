@@ -42,10 +42,15 @@ while i < len(dates_deltaToPredict):
 
     i = i + 1
 
+df3 = data.copy()
+df3['Close'] = pd.DataFrame(model.predict(df3[['Date_delta']]).tolist(), columns=['Close'])
 
 # Graph correlating the Open and Close stock values
 vag.fig_sct_open_close(data)
 
+# Grafico com os Close históricos e previstos para as mesmas datas
+vag.fig_real_predicted_values(data, df3, 'Regressao Linear Simples usando Date')
+
 # Generating a comparative graph between the prices we have and future prices our model predicted
-vag.fig_real_predicted_values(data, df2)
+vag.fig_real_predicted_values(data, df2, 'Regressao Linear Simples usando Date')
 
