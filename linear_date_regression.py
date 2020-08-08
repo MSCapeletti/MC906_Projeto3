@@ -21,6 +21,7 @@ print(data[['Date_delta', 'Close']].corr())
 x_v = data[['Date_delta']]
 y_v = data[['Close']]
 
+# modelo para a predição dos valores futuros
 model = LinearRegression()
 model.fit(x_v, y_v)
 
@@ -42,15 +43,31 @@ while i < len(dates_deltaToPredict):
 
     i = i + 1
 
-df3 = data.copy()
-df3['Close'] = pd.DataFrame(model.predict(df3[['Date_delta']]).tolist(), columns=['Close'])
-
 # Graph correlating the Open and Close stock values
 vag.fig_sct_open_close(data)
 
-# Grafico com os Close históricos e previstos para as mesmas datas
-vag.fig_real_predicted_values(data, df3, 'Regressao Linear Simples usando Date')
-
 # Generating a comparative graph between the prices we have and future prices our model predicted
 vag.fig_real_predicted_values(data, df2, 'Regressao Linear Simples usando Date')
+
+
+maxDate = data['Date_delta'].max()
+trainData = data[data['Date_delta'] <= 0.8*maxDate]
+validationData = data[data['Date_delta'] > 0.8*maxDate]
+x_t = trainData[['Date_delta']]
+y_t = trainData[['Close']]
+
+# modelo para comparação dos dados previstos com os reais
+trainModel = LinearRegression()
+trainModel.fit(x_t, y_t)
+
+df3 = pd.DataFrame(columns=['Date_delta', 'Close'])
+for dd in validationData['Date_delta']:
+    date = validationData[validationData['Date_delta'] == dd]['Date'].values[0]
+    closingValue = trainModel.predict([[dd]])[0][0]
+    df3 = df3.append({'Date': date, 'Close': closingValue}, ignore_index=True)
+
+# Grafico com os Close históricos e previstos para as mesmas datas
+vag.fig_real_predicted_values(data, df3, 'Comparacao entre previsão e real, previsao feita com os dados historicos anteriores')
+
+
 

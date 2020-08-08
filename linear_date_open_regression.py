@@ -49,3 +49,25 @@ vag.fig_sct_open_close(data)
 
 # Generating a comparative graph between the prices we have and future prices our model predicted
 vag.fig_real_predicted_values(data, df2, 'Regressao Linear Multipla usando Date e Open')
+
+maxDate = data['Date_delta'].max()
+trainData = data[data['Date_delta'] <= 0.8*maxDate]
+validationData = data[data['Date_delta'] > 0.8*maxDate]
+x_t = trainData[['Date_delta', 'Open']]
+y_t = trainData[['Close']]
+
+# modelo para comparação dos dados previstos com os reais
+trainModel = LinearRegression()
+trainModel.fit(x_t, y_t)
+
+openValue = trainData.loc[len(trainData['Open'])-1, 'Open']
+df3 = pd.DataFrame(columns=['Date_delta', 'Close'])
+for dd in validationData['Date_delta']:
+    date = validationData[validationData['Date_delta'] == dd]['Date'].values[0]
+    closingValue = trainModel.predict([[dd, openValue]])[0][0]
+    df3 = df3.append({'Date': date, 'Close': closingValue}, ignore_index=True)
+
+    openValue = closingValue
+
+# Grafico com os Close históricos e previstos para as mesmas datas
+vag.fig_real_predicted_values(data, df3, 'Comparação entre previsão e real, previsao feita com os dados historicos anteriores')
