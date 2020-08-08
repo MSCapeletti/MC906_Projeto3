@@ -63,8 +63,4 @@ if __name__ == '__main__':
 
     model.fit(x_train, y_train)
 
-    print("model score:")
-    print(model.score(x_test, y_test))
-
-    print('coefficients:')
-    print(model.coef_)
+    
