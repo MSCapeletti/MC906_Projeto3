@@ -63,12 +63,16 @@ if __name__ == '__main__':
     model = LinearRegression()
     model.fit(X, Y)
 
-    df3 = pd.DataFrame(columns=['Date', 'Close'])
+    predicted_data = pd.DataFrame(columns=['Date', 'Close'])
     closingValues = model.predict(validationData[features])
+
     for idx, value in enumerate(closingValues):
-        date = validationData['Date'].values[idx]
-        df3 = df3.append({'Date': date, 'Close': value}, ignore_index=True)
+        if idx + 1 < validationData.shape[0]:
+            date = validationData['Date'].values[idx + 1]
+        else:
+            date = validationData['Date'].values[idx] + np.timedelta64(1, 'D') # predict next day
+        predicted_data = predicted_data.append({'Date': date, 'Close': value}, ignore_index=True)
 
     # Grafico com os Close históricos e previstos para as mesmas datas
     vag.fig_real_predicted_values(
-        data, df3, 'Comparacao entre previsão e real, previsao feita com os dados historicos anteriores')
+        data, predicted_data, 'Comparacao entre previsão e real, previsao feita com os dados historicos anteriores')
