@@ -8,6 +8,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from datetime import date
 from datetime import datetime
+import visuals_and_graphics as vag
+from process import process
 
 
 if __name__ == '__main__':
@@ -44,23 +46,29 @@ if __name__ == '__main__':
 
     features = ['Open', 'High', 'Low', 'Volume', 'Close']
 
-    X = data[features]
-    Y = data[['Close']]
+    trainData = data[data['Date_delta'] <= 0.8*maxDate]
+    validationData = data[data['Date_delta'] > 0.8*maxDate]
 
+    X = trainData[features]
+    Y = trainData['Close']
     # use last day's values to predict next day's close
     # remove first day from target
     Y = Y.drop([0])
     Y = Y.reset_index(drop=True)
-    
+
     # remove the last day from input
     X = X.drop([X.shape[0] - 1])
     X.reset_index(drop=True)
 
     model = LinearRegression()
+    model.fit(X, Y)
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.33, random_state=0)
+    df3 = pd.DataFrame(columns=['Date', 'Close'])
+    closingValues = model.predict(validationData[features])
+    for idx, value in enumerate(closingValues):
+        date = validationData['Date'].values[idx]
+        df3 = df3.append({'Date': date, 'Close': value}, ignore_index=True)
 
-    model.fit(x_train, y_train)
-
-    
+    # Grafico com os Close históricos e previstos para as mesmas datas
+    vag.fig_real_predicted_values(
+        data, df3, 'Comparacao entre previsão e real, previsao feita com os dados historicos anteriores')
